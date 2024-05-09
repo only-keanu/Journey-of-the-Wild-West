@@ -15,7 +15,7 @@ public class Main extends Application {
 	public static void main(String[] args)  {
 		launch(args);
 	}
-
+ 
 	public void start(Stage stage){
 		BackgroundMusicPlayer.getInstance().playMusic();
 		MainMenu mainMenu = new MainMenu();

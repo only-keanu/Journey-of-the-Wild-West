@@ -29,8 +29,8 @@ public class Instructions {
 	private static int pageCounter = 1;
 
 	private final static Image INSTRUCTION_PAGE1 = new Image ("instructions1.png", GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT, false, false);
-	private final static Image INSTRUCTION_PAGE2 = new Image ("instructions_page2.jpg", GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT, false, false);
-	private final static Image INSTRUCTION_PAGE3 = new Image ("instructions_page3.jpg", GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT, false, false);
+	private final static Image INSTRUCTION_PAGE2 = new Image ("instructions2.png", GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT, false, false);
+	private final static Image INSTRUCTION_PAGE3 = new Image ("instructions2.png", GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT, false, false);
 
 	Instructions () {
 		this.canvas = new Canvas (GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT);

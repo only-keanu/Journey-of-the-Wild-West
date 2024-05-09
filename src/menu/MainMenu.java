@@ -72,7 +72,7 @@ public class MainMenu {
 		Canvas canvas = new Canvas(GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT);
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 
-		Image background = new Image("bg.png");
+		Image background = new Image("/bg.png");
 		gc.drawImage(background, 0, 0, GameStage.WINDOW_WIDTH,GameStage.WINDOW_HEIGHT);
 		return canvas;
 	}

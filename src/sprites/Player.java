@@ -1,5 +1,3 @@
-
-
 package sprites;
 
 import java.util.ArrayList;
@@ -51,12 +49,33 @@ public class Player extends Sprite{
 
 	//method called if up/down/left/right arrow key is pressed.
 	public void move() {
-		if((this.x+this.dx >= 0) && (this.x+this.dx <= GameStage.WINDOW_WIDTH-PLAYER_WIDTH)) {
-			this.x += this.dx;
-		}
-		if((this.y+this.dy >= 0) && (this.y+this.dy <= GameStage.WINDOW_HEIGHT-PLAYER_WIDTH)) {
-			this.y += this.dy;
-		}
+	    if ((this.x + this.dx >= 0) && (this.x + this.dx <= GameStage.WINDOW_WIDTH - PLAYER_WIDTH)) {
+	        double nextX = this.x + this.dx;
+	        double nextY = this.y + this.dy;
+
+	        // Check if the next position collides with obstacles
+	        if (!checkCollisionWithObstacles(nextX, nextY)) {
+	            this.x = nextX;
+	        }
+	    }
+	    if ((this.y + this.dy >= 0) && (this.y + this.dy <= GameStage.WINDOW_HEIGHT - PLAYER_WIDTH)) {
+	        double nextX = this.x + this.dx;
+	        double nextY = this.y + this.dy;
+
+	        // Check if the next position collides with obstacles
+	        if (!checkCollisionWithObstacles(nextX, nextY)) {
+	            this.y = nextY;
+	        }
+	    }
+	}
+	
+	private boolean checkCollisionWithObstacles(double nextX, double nextY) {
+	    for (Obstacle obstacle : GameTimer.obstacles) {
+	        if (obstacle.collided(nextX, nextY, PLAYER_WIDTH, PLAYER_WIDTH)) {
+	            return true; // Collision detected with obstacle
+	        }
+	    }
+	    return false; // No collision with any obstacle
 	}
 
 	//getters
@@ -85,7 +104,7 @@ public class Player extends Sprite{
 		return PLAYER_WIDTH;
 	}
 
-	public static Image getPikachuImg() {
+	public static Image getPlayerImage() {
 		return DEFAULT_IMAGE;
 	}
 

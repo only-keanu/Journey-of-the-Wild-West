@@ -15,9 +15,10 @@ public class BackgroundMusicPlayer {
         String path = "test.mp3";  
         Media backgroundMusic = new Media(new File(path).toURI().toString());  
         mediaPlayer = new MediaPlayer(backgroundMusic);
-
+        
         // Set audio to loop indefinitely
         mediaPlayer.setOnEndOfMedia(() -> mediaPlayer.seek(Duration.ZERO));
+        mediaPlayer.setVolume(0.3);
         mediaPlayer.play();
     }
 
@@ -33,5 +34,5 @@ public class BackgroundMusicPlayer {
         mediaPlayer.play();
     }
 
-    // Other methods to control volume, balance, etc. can be added here
+    // Other methods to control balance, etc. can be added here
 }

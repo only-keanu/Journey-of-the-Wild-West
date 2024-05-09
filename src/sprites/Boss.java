@@ -1,18 +1,3 @@
-/***********************************************************************************************
- * Pikachu Shooting Game (Mini Project)
- * CMSC 22 - WX1L
- * 
- * Description: Masterball extends a Pokeball and is the boss of the game. It has its own
- * width, damage, health, horizontal speed, vertical speed, and image. Unlike the Pokeball,
- * it can move both horizontally and vertically. Once it collides with Pikachu, it decreases
- * Pikachu's health by 50. 
- * 
- * @author TINED, Erika Leanne
- *		   VERDERA, Glancy
- * 
- * @created_date 2023-05-13 10:25
- **********************************************************************************************/
-
 package sprites;
 
 import javafx.scene.image.Image;
@@ -23,24 +8,24 @@ public class Boss extends Enemy {
 
 	protected int health;
 
-	public static final int MASTERBALL_WIDTH = 55;
-	public static final int MASTERBALL_DAMAGE = 50;
-	public static final int MASTERBALL_HEALTH = 3000;
-	public final static Image MASTERBALL_IMAGE = new Image("boss.png", MASTERBALL_WIDTH, MASTERBALL_WIDTH, false, false);
+	public static final int BOSS_WIDTH = 55;
+	public static final int BOSS_DAMAGE = 50;
+	public static final int BOSS_HEALTH = 3000;
+	public final static Image BOSS_IMAGE = new Image("boss.png", BOSS_WIDTH, BOSS_WIDTH, false, false);
 	private boolean moveUp;
 	private final static int VERTICAL_SPEED = 2;
 	private int verticalSpeed;
 
 	public Boss(int x, int y) {
 		super(x, y, player);
-		this.loadImage(MASTERBALL_IMAGE);
-		this.damage = MASTERBALL_DAMAGE;
-		this.health = MASTERBALL_HEALTH;
+		this.loadImage(BOSS_IMAGE);
+		this.damage = BOSS_DAMAGE;
+		this.health = BOSS_HEALTH;
 		this.moveUp = r.nextBoolean();
 		this.verticalSpeed = VERTICAL_SPEED;
 	}
 
-	// method that changes the x position of the Masterball
+	// method that changes the x position of the boss
 	public void move(){
 
 		if (this.moveRight == true){

@@ -47,7 +47,7 @@ public class Sprite {
 	}
 
 	//method that will return the bounds of an image
-	private Rectangle2D getBounds(){
+	public Rectangle2D getBounds(){
 		return new Rectangle2D(this.x, this.y, this.width, this.height);
 	}
 

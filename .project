@@ -20,4 +20,11 @@
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>images</name>
+			<type>2</type>
+			<location>C:/Users/Keane/eclipse-workspace/CMSC22_project_2/src/images</location>
+		</link>
+	</linkedResources>
 </projectDescription>

@@ -37,9 +37,9 @@ public class GameStage {
 		this.stage.show();
 	}
 
-	public void setGameOver(int numPokeballs, int numApple, int numEvolutionStone, int numPokedex, int currentTime){
+	public void setGameOver(int numEnemies, int numHearts, int numPowerUps, int numCoffees, int currentTime){
 		// creates a GameOverStage
-		GameOverStage gameOver = new GameOverStage(numPokeballs, numApple, numEvolutionStone, numPokedex, currentTime);
+		GameOverStage gameOver = new GameOverStage(numEnemies, numHearts, numPowerUps, numCoffees, currentTime);
 		gameOver.setStage(stage);
 	}
 }
