@@ -1,0 +1,1 @@
+java --module-path "C:\Users\Keane\Downloads\Compressed\openjfx-22.0.1_windows-x64_bin-sdk\javafx-sdk-22.0.1\lib" --add-modules javafx.controls,javafx.graphics,javafx.media,javafx.fxml -jar C:\Users\Keane\eclipse-workspace\CMSC22_project_2\test.jar

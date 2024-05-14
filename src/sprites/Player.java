@@ -14,24 +14,31 @@ public class Player extends Sprite{
 	private boolean alive;
 	private boolean immortality;
 	private boolean shooting = false;
+	private int heart_powerup;
+	private int speed = 1;
+	private int score = 0;
+	
 
 	private ArrayList<Bullet> bullets;
 	private ArrayList<PowerUp> powerupsObtained = new ArrayList<PowerUp>();
 
 	private final static int PLAYER_WIDTH = 25;
-	private final static Image DEFAULT_IMAGE = new Image("char.png", PLAYER_WIDTH, PLAYER_WIDTH, false, false);
-	private final static Image RAICHU_IMAGE = new Image("evolve.png", PLAYER_WIDTH , PLAYER_WIDTH, false, false);
-	
+	private final static Image PLAYER1_IMAGE = new Image("player1.png", PLAYER_WIDTH, PLAYER_WIDTH, false, false);
+	private final static Image PLAYER2_IMAGE = new Image("player1.png", PLAYER_WIDTH, PLAYER_WIDTH, false, false);
+	private final static Image EVOLVE_IMAGE = new Image("evolve.png", PLAYER_WIDTH , PLAYER_WIDTH, false, false);
+	public static Image p1_score = new Image("p1Score.png", PLAYER_WIDTH+25 , PLAYER_WIDTH+25, false, false);
+	public static Image p2_score = new Image("p2Score.png", PLAYER_WIDTH+25 , PLAYER_WIDTH+25, false, false);
 	
 	public Player(String name, int x, int y){
 		super(x,y);
 		this.name = name;
 		Random r = new Random();
+		this.heart_powerup = 0;
 		this.strength = r.nextInt(51) + 100;
 		this.alive = true;
 		this.bullets = new ArrayList<Bullet>();
 		this.immortality = false;
-		this.loadImage(Player.DEFAULT_IMAGE);
+		this.loadImage(Player.PLAYER1_IMAGE);
 	}
 
 	//method called if spacebar is pressed
@@ -77,6 +84,8 @@ public class Player extends Sprite{
 	    }
 	    return false; // No collision with any obstacle
 	}
+	
+	
 
 	//getters
 	public boolean isAlive(){
@@ -104,12 +113,12 @@ public class Player extends Sprite{
 		return PLAYER_WIDTH;
 	}
 
-	public static Image getPlayerImage() {
-		return DEFAULT_IMAGE;
+	public static Image getPlayer1Image() {
+		return PLAYER1_IMAGE;
 	}
 
-	public static Image getRaichuImg() {
-		return RAICHU_IMAGE;
+	public static Image getEvolveImg() {
+		return EVOLVE_IMAGE;
 	}
 
 	//method that will get the bullets 'shot' by the ship
@@ -141,6 +150,26 @@ public class Player extends Sprite{
 
 	public void addPowerUp(PowerUp p){
 		this.powerupsObtained.add(p);
+	}
+
+	public int getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(int speed) {
+		this.speed = speed;
+	}
+
+	public static Image getPlayer2Image() {
+		return PLAYER2_IMAGE;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
 	}
 
 }

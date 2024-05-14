@@ -11,7 +11,7 @@ public class Power extends PowerUp {
 
 	public void activate(Player ship) {
 		ship.setImmortality(true); // makes ship immortal
-		ship.setImage(Player.getRaichuImg()); // change Pikachu icon to immortal
+		ship.setImage(Player.getEvolveImg()); // change Pikachu icon to immortal
 
 	}
 }

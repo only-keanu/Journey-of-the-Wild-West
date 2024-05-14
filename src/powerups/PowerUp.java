@@ -16,9 +16,9 @@ public class PowerUp extends Sprite {
 	public final static Image POWER_IMAGE = new Image("power.png", POWERUP_SIZE, POWERUP_SIZE, false, false);
 	public final static Image COFFEE_IMG = new Image("coffee.png", POWERUP_SIZE, POWERUP_SIZE, false, false);
 
-	public static final String APPLE = "Apple";
-	public static final String EVOLUTION_STONE = "Evolution Stone";
-	public static final String POKEDEX = "Pokedex";
+	public static final String HEART1 = "Heart";
+	public static final String POWERUP = "Powerup";
+	public static final String COFFEE = "Coffee";
 
 	public PowerUp (int xPos, int yPos, String powerupType, int time) {
 		super(xPos, yPos);

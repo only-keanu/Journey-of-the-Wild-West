@@ -37,9 +37,10 @@ public class GameStage {
 		this.stage.show();
 	}
 
-	public void setGameOver(int numEnemies, int numHearts, int numPowerUps, int numCoffees, int currentTime){
+	public void setGameOver(boolean player1Wins,int numEnemies, int numHearts, int numPowerUps, int numCoffees, int currentTime){
+		
 		// creates a GameOverStage
-		GameOverStage gameOver = new GameOverStage(numEnemies, numHearts, numPowerUps, numCoffees, currentTime);
+		GameOverStage gameOver = new GameOverStage(player1Wins, numEnemies, numHearts, numPowerUps, numCoffees, currentTime);
 		gameOver.setStage(stage);
 	}
 }

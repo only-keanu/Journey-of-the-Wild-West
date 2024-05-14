@@ -13,8 +13,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import powerups.PowerUp;
+
 import sprites.Player;
 import sprites.Enemy;
+
+import mainGame.GameTimer;
 
 public class GameOverStage {
 	private Scene scene;
@@ -29,17 +32,21 @@ public class GameOverStage {
 	private int numPowerUps;
 	private int numCoffees;
 	private int ICON_WIDTH = 40;
+	private boolean player1Wins;
 	
-	public final Image LOST_BACKGROUND = new Image("lost.png");
-	public final Image WIN_BACKGROUND = new Image("end.png");
+	public final Image PLAYER1_WINS = new Image("player1_wins.png");
+	public final Image PLAYER2_WINS = new Image("player2_wins.png");
+	
 
-	public GameOverStage(int numEnemies, int numHearts, int numPowerUps, int numCoffees, int currentTime) {
+	public GameOverStage(boolean player1Wins,int score, int numHearts, int numPowerUps, int numCoffees, int currentTime) {
+		
 		this.root = new StackPane();
 		this.scene = new Scene(root, GameStage.WINDOW_WIDTH,GameStage.WINDOW_HEIGHT, Color.BLACK);
 		this.canvas = new Canvas(GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT);
 		this.gc = canvas.getGraphicsContext2D();
 
-		this.score = numEnemies;
+		this.player1Wins = player1Wins;
+		this.score = score;
 		this.timer = currentTime;
 		this.numHeart = numHearts;
 		this.numPowerUps = numPowerUps;
@@ -60,14 +67,23 @@ public class GameOverStage {
 
 		//setting the background
 		if (this.timer == 60){ //if player wins
-			this.gc.drawImage(WIN_BACKGROUND, 0, 0, GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT);
+			this.gc.drawImage(PLAYER2_WINS, 0, 0, GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT);
 		}
 
 		else { //if player loses
-			this.gc.drawImage(LOST_BACKGROUND, 0, 0, GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT);
+			if(!player1Wins) {
+				this.gc.drawImage(PLAYER1_WINS, 0, 0, GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT);
+				score = mainGame.GameTimer.player1.getScore();
+			}
+			if(player1Wins) {
+				this.gc.drawImage(PLAYER2_WINS, 0, 0, GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT);
+				score = mainGame.GameTimer.player2.getScore();
+			}
+			
 		}
 
 		//setting the font style and showing the score
+
 		Font theFont = Font.font("ArcadeClassic", FontWeight.EXTRA_BOLD, 18);
 		this.gc.setFont(theFont);
 		this.gc.setFill(Color.WHITE);

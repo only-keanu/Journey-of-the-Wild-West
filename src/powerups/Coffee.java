@@ -14,7 +14,7 @@ public class Coffee extends PowerUp {
 
 	public void activate(ArrayList<Enemy> enemies) {
 		for (Enemy p : enemies) {
-			p.setSpeed(Enemy.MIN_SPEED); //sets all Pokeball speed to minimum
+			p.setSpeed(Enemy.MIN_SPEED); 
 		} 
 	}
 }
