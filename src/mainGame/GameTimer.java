@@ -180,7 +180,7 @@ public class GameTimer extends AnimationTimer{
 		this.drawHealthBar();
 		
 	
-		// calls the get power ups to check if any power up should be activated
+		// calls the get power ups to check if any power up shouldb  be activated
 		this.activatePowerUps();
 
 		// checks if there are descriptions to render
@@ -188,7 +188,7 @@ public class GameTimer extends AnimationTimer{
 
 		// winning or losing condition
 		if (currentTime == TIME_LIMIT || !player1.isAlive() || !player2.isAlive()) {
-			boolean player1Win = false;
+			boolean player1Win = true;
 			if(!player1.isAlive() && player2.isAlive()) {
 				this.timer.stop();
 				stop();
@@ -763,7 +763,9 @@ public class GameTimer extends AnimationTimer{
 		for (Bullet b : this.bullets) { // loops through the bullet list
 			if(b.collidesWith(player2)) {
 				b.setVisible(false);
-				player2.decreaseStrength(10);
+				player2.decreaseStrength(10); 
+				// shows the damage incurred by player1 to player2
+				this.setDescription(player2.getX(), player2.getY(), "-" + "10" + " HP", currentTime, true, Color.RED);
 			}
 			// checks if Player 2 has enough health
 			if(player2.getStrength() <= 0) { // if Player 2 health is 0 or below, it dies
@@ -813,11 +815,12 @@ public class GameTimer extends AnimationTimer{
 			}
 		}
 		
-		//b2 COLLISSION
+		//bullet2 collision
 		for (Bullet b2 : this.bullets2) { // loops through the bullet list
 			if(b2.collidesWith(player1)) {
 				b2.setVisible(false);
 				player1.decreaseStrength(10);
+				this.setDescription(player1.getX(), player1.getY(), "-" + "10" + " HP", currentTime, true, Color.RED);
 			}
 			// checks if Player1 has enough health
 			if(player1.getStrength() <= 0) { // if Player1's health is 0 or below, it dies
@@ -880,9 +883,9 @@ public class GameTimer extends AnimationTimer{
 		}
 
 
-		for (Enemy p: this.enemies) { // loops through all the enemys to see its collisions
+		for (Enemy p: this.enemies) { // loops through all the enemies to see its collisions
 
-			//for Player1 and enemy collision
+			//for player1 and enemy collision
 			if (p.collidesWith(this.player1)) {
 
 				// if enemy is just a regular enemy then it dies
@@ -1048,10 +1051,10 @@ public class GameTimer extends AnimationTimer{
 	        	pressedKeys2.remove(code);
 		        }
 	        if (pressedKeys1.isEmpty()) {
-	            stopMyShip1();
+	            stopPlayer1();
 	        }
 	        if(pressedKeys2.isEmpty()) {
-	        	stopMyShip2();
+	        	stopPlayer2();
 	        }
 	    });
 	}
@@ -1125,14 +1128,14 @@ public class GameTimer extends AnimationTimer{
 	}
 
 	/* ---------------------------------------------------------------------------------------------
-	This method stops the ship's movement and set it DX and DY to 0 */
-	private void stopMyShip1() {
+	This method stops player1's movement and set it DX and DY to 0 */
+	private void stopPlayer1() {
 	    this.player1.setDX(0);
 	    this.player1.setDY(0);
 	}
 	
-	//This method stops the ship's movement and set it DX and DY to 0 */
-	private void stopMyShip2() {
+	//This method stops the player2's movement and set it DX and DY to 0 */
+	private void stopPlayer2() {
 	    this.player2.setDX(0);
 	    this.player2.setDY(0);
 	}

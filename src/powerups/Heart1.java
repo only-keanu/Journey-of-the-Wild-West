@@ -9,7 +9,7 @@ public class Heart1 extends PowerUp {
 		this.loadImage(PowerUp.HEART_IMAGE);
 	}
 
-	public void activate(Player ship, int strength) {
-		ship.increaseStrength(strength); // increases strength
+	public void activate(Player p, int strength) {
+		p.increaseStrength(strength); // increases strength
 	}
 }

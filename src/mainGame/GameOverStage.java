@@ -37,6 +37,7 @@ public class GameOverStage {
 	public final Image PLAYER1_WINS = new Image("player1_wins.png");
 	public final Image PLAYER2_WINS = new Image("player2_wins.png");
 	
+	
 
 	public GameOverStage(boolean player1Wins,int score, int numHearts, int numPowerUps, int numCoffees, int currentTime) {
 		
@@ -71,11 +72,11 @@ public class GameOverStage {
 		}
 
 		else { //if player loses
-			if(!player1Wins) {
+			if(player1Wins) {
 				this.gc.drawImage(PLAYER1_WINS, 0, 0, GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT);
 				score = mainGame.GameTimer.player1.getScore();
 			}
-			if(player1Wins) {
+			if(!player1Wins) {
 				this.gc.drawImage(PLAYER2_WINS, 0, 0, GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT);
 				score = mainGame.GameTimer.player2.getScore();
 			}
@@ -87,20 +88,20 @@ public class GameOverStage {
 		Font theFont = Font.font("ArcadeClassic", FontWeight.EXTRA_BOLD, 18);
 		this.gc.setFont(theFont);
 		this.gc.setFill(Color.WHITE);
-		this.gc.drawImage(Enemy.ENEMY_IMAGE, GameStage.WINDOW_WIDTH * 0.400, GameStage.WINDOW_HEIGHT * 0.65, ICON_WIDTH, ICON_WIDTH);
+		this.gc.drawImage(Player.p1_score, GameStage.WINDOW_WIDTH * 0.400, GameStage.WINDOW_HEIGHT * 0.65, ICON_WIDTH, ICON_WIDTH);
 		this.gc.fillText("SCORE: " + String.valueOf(this.score), GameStage.WINDOW_WIDTH * 0.455, GameStage.WINDOW_HEIGHT * 0.7);
 
 
-		this.gc.drawImage(PowerUp.HEART_IMAGE, GameStage.WINDOW_WIDTH * 0.375, GameStage.WINDOW_HEIGHT * 0.49, ICON_WIDTH, ICON_WIDTH);
-		this.gc.fillText(String.valueOf(numHeart), GameStage.WINDOW_WIDTH * 0.39, GameStage.WINDOW_HEIGHT * 0.62);
-
-
-		this.gc.drawImage(PowerUp.POWER_IMAGE, GameStage.WINDOW_WIDTH * 0.475, GameStage.WINDOW_HEIGHT * 0.49, ICON_WIDTH, ICON_WIDTH);
-		this.gc.fillText(String.valueOf(numPowerUps), GameStage.WINDOW_WIDTH * 0.49, GameStage.WINDOW_HEIGHT * 0.62);
-
-
-		this.gc.drawImage(PowerUp.COFFEE_IMG, GameStage.WINDOW_WIDTH * 0.575, GameStage.WINDOW_HEIGHT * 0.49, ICON_WIDTH, ICON_WIDTH);
-		this.gc.fillText(String.valueOf(numCoffees), GameStage.WINDOW_WIDTH * 0.59, GameStage.WINDOW_HEIGHT * 0.62);
+//		this.gc.drawImage(PowerUp.HEART_IMAGE, GameStage.WINDOW_WIDTH * 0.375, GameStage.WINDOW_HEIGHT * 0.49, ICON_WIDTH, ICON_WIDTH);
+//		this.gc.fillText(String.valueOf(numHeart), GameStage.WINDOW_WIDTH * 0.39, GameStage.WINDOW_HEIGHT * 0.62);
+//
+//
+//		this.gc.drawImage(PowerUp.POWER_IMAGE, GameStage.WINDOW_WIDTH * 0.475, GameStage.WINDOW_HEIGHT * 0.49, ICON_WIDTH, ICON_WIDTH);
+//		this.gc.fillText(String.valueOf(numPowerUps), GameStage.WINDOW_WIDTH * 0.49, GameStage.WINDOW_HEIGHT * 0.62);
+//
+//
+//		this.gc.drawImage(PowerUp.COFFEE_IMG, GameStage.WINDOW_WIDTH * 0.575, GameStage.WINDOW_HEIGHT * 0.49, ICON_WIDTH, ICON_WIDTH);
+//		this.gc.fillText(String.valueOf(numCoffees), GameStage.WINDOW_WIDTH * 0.59, GameStage.WINDOW_HEIGHT * 0.62);
 
 
 		//adding the exit button
