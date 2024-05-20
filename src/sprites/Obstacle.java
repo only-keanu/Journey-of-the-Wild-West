@@ -2,11 +2,7 @@ package sprites;
 
 import java.util.Random;
 
-import sprites.Enemy;
-import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
-import mainGame.GameStage;
-import mainGame.GameTimer;
 
 public class Obstacle extends Sprite {
 

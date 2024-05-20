@@ -2,12 +2,8 @@ package sprites;
 
 import java.util.Random;
 
-import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
-import mainGame.GameStage;
 import mainGame.GameTimer;
-import sprites.Sprite;
-import sprites.Player;
 
 public class Enemy extends Sprite {
 
@@ -34,7 +30,7 @@ public class Enemy extends Sprite {
         Random r = new Random();
         this.speed = randomValue;
         this.initialSpeed = this.speed;
-        this.damage = r.nextInt(11) + 30;
+        this.damage = 10;
         this.moveRight = true;
         this.player = player; // Assigning the player reference
     }

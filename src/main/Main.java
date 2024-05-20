@@ -1,11 +1,7 @@
 
 package main;
 
-import java.io.File;
-import javafx.util.Duration;
 import javafx.application.Application;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import mainGame.BackgroundMusicPlayer;
 import menu.MainMenu;

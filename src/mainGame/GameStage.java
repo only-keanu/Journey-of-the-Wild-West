@@ -4,6 +4,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class GameStage {
@@ -43,5 +44,18 @@ public class GameStage {
 		GameOverStage gameOver = new GameOverStage(player1Wins, numEnemies, numHearts, numPowerUps, numCoffees, currentTime);
 		gameOver.setStage(stage);
 	}
+
+	void drawHealthBar(GameTimer gameTimer) {
+		gameTimer.gc.setFill(Color.RED);
+		gameTimer.gc.fillRect(50, GameStage.WINDOW_HEIGHT-80, 100*(GameTimer.player1.getHP()/100.0), 20);
+		gameTimer.gc.setStroke(Color.BLACK);
+		gameTimer.gc.strokeRect(50, GameStage.WINDOW_HEIGHT-80, 100*(GameTimer.player1.getHP()/100.0), 20);
+		
+		gameTimer.gc.setFill(Color.GREEN);
+		gameTimer.gc.fillRect(600, GameStage.WINDOW_HEIGHT-80, 100*(GameTimer.player2.getHP()/100.0), 20);
+		gameTimer.gc.setStroke(Color.BLACK);
+		gameTimer.gc.strokeRect(600, GameStage.WINDOW_HEIGHT-80, 100*(GameTimer.player2.getHP()/100.0), 20);
+	   }
+
 }
 

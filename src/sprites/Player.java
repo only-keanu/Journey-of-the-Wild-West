@@ -1,30 +1,34 @@
 package sprites;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import mainGame.*;
-import powerups.PowerUp;
+import powerups.PowerUps;
 
 public class Player extends Sprite{
 	private String name;
-	private int strength;
+	private int hp;
+	private int attackDamage;
 	private boolean alive;
 	private boolean immortality;
 	private boolean shooting = false;
-	private int heart_powerup;
-	private int speed = 1;
+	private double speed = 1;
 	private int score = 0;
 	
 
 	private ArrayList<Bullet> bullets;
-	private ArrayList<PowerUp> powerupsObtained = new ArrayList<PowerUp>();
+	private ArrayList<PowerUps> powerupsObtained = new ArrayList<PowerUps>();
+	public Set<KeyCode> pressedKeys1 = new HashSet<>();
+	public Set<KeyCode> pressedKeys2 = new HashSet<>();
 
 	private final static int PLAYER_WIDTH = 25;
 	private final static Image PLAYER1_IMAGE = new Image("player1.png", PLAYER_WIDTH, PLAYER_WIDTH, false, false);
-	private final static Image PLAYER2_IMAGE = new Image("player1.png", PLAYER_WIDTH, PLAYER_WIDTH, false, false);
+	private final static Image PLAYER2_IMAGE = new Image("player2.png", PLAYER_WIDTH, PLAYER_WIDTH, false, false);
 	private final static Image EVOLVE_IMAGE = new Image("evolve.png", PLAYER_WIDTH , PLAYER_WIDTH, false, false);
 	public static Image p1_score = new Image("p1Score.png", PLAYER_WIDTH+25 , PLAYER_WIDTH+25, false, false);
 	public static Image p2_score = new Image("p2Score.png", PLAYER_WIDTH+25 , PLAYER_WIDTH+25, false, false);
@@ -33,8 +37,8 @@ public class Player extends Sprite{
 		super(x,y);
 		this.name = name;
 		Random r = new Random();
-		this.heart_powerup = 0;
-		this.strength = r.nextInt(51) + 100;
+		this.setAttackDamage(10);
+		this.hp = r.nextInt(51) + 100;
 		this.alive = true;
 		this.bullets = new ArrayList<Bullet>();
 		this.immortality = false;
@@ -97,8 +101,8 @@ public class Player extends Sprite{
 		return this.name;
 	}
 
-	public int getStrength(){
-		return this.strength;
+	public int getHP(){
+		return this.hp;
 	}
 
 	public boolean getImmortality(){
@@ -106,10 +110,10 @@ public class Player extends Sprite{
 	}
 
 	public void increaseStrength(int num){
-		this.strength += num;
+		this.hp += num;
 	}
 
-	public static int getPikachuWidth() {
+	public static int getPlayerWidth() {
 		return PLAYER_WIDTH;
 	}
 
@@ -127,12 +131,12 @@ public class Player extends Sprite{
 	}
 
 	//setters
-	public void decreaseStrength(int num){
-		this.strength -= num;
+	public void decreaseHP(int num){
+		this.hp -= num;
 	}
 
-	public void setStrength(int num){
-		this.strength = num;
+	public void setHP(int num){
+		this.hp = num;
 	}
 
 	public void setImmortality(boolean b){
@@ -148,16 +152,16 @@ public class Player extends Sprite{
 		this.visible = false;
 	}
 
-	public void addPowerUp(PowerUp p){
+	public void addPowerUp(PowerUps p){
 		this.powerupsObtained.add(p);
 	}
 
-	public int getSpeed() {
+	public double getSpeed() {
 		return speed;
 	}
 
-	public void setSpeed(int speed) {
-		this.speed = speed;
+	public void setSpeed(double d) {
+		this.speed = d;
 	}
 
 	public static Image getPlayer2Image() {
@@ -170,6 +174,54 @@ public class Player extends Sprite{
 
 	public void setScore(int score) {
 		this.score = score;
+	}
+
+	
+	//handles player movements
+	public void handleKeyPressEvent(GameTimer gameTimer) {
+	    gameTimer.theScene.setOnKeyPressed(e -> {
+	        KeyCode code = e.getCode();
+	        gameTimer.movePlayer(code);
+	        System.out.println(gameTimer.activeBullet+" STATE.");
+	        System.out.println(gameTimer.activeBullet2+" STATE.");
+	        if(gameTimer.activeBullet == false) {
+		        gameTimer.shootPlayer1(code);
+	        }
+	        if(gameTimer.activeBullet2 == false) {
+	        	gameTimer.shootPlayer2(code);
+	        }
+	        if (code == KeyCode.W || code == KeyCode.A || code == KeyCode.S || code == KeyCode.D) {
+	        pressedKeys1.add(code);
+	        }
+	        
+	        if(code == KeyCode.NUMPAD8 || code == KeyCode.NUMPAD4 || code == KeyCode.NUMPAD5 || code == KeyCode.NUMPAD6){
+	        pressedKeys2.add(code);
+	        }
+	    });
+	
+	    gameTimer.theScene.setOnKeyReleased(e -> {
+	        KeyCode code = e.getCode();
+	        if (code == KeyCode.W || code == KeyCode.A || code == KeyCode.S || code == KeyCode.D) {
+		        pressedKeys1.remove(code);
+		        }
+	        if(code == KeyCode.NUMPAD8 || code == KeyCode.NUMPAD4 || code == KeyCode.NUMPAD5 || code == KeyCode.NUMPAD6){
+	        	pressedKeys2.remove(code);
+		        }
+	        if (pressedKeys1.isEmpty()) {
+	            gameTimer.stopPlayer1();
+	        }
+	        if(pressedKeys2.isEmpty()) {
+	        	gameTimer.stopPlayer2();
+	        }
+	    });
+	}
+
+	public int getAttackDamage() {
+		return attackDamage;
+	}
+
+	public void setAttackDamage(int attackDamage) {
+		this.attackDamage = attackDamage;
 	}
 
 }

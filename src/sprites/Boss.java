@@ -10,7 +10,7 @@ public class Boss extends Enemy {
 
 	public static final int BOSS_WIDTH = 55;
 	public static final int BOSS_DAMAGE = 50;
-	public static final int BOSS_HEALTH = 3000;
+	public static final int BOSS_HEALTH = 200;
 	public final static Image BOSS_IMAGE = new Image("boss.png", BOSS_WIDTH, BOSS_WIDTH, false, false);
 	private boolean moveUp;
 	private final static int VERTICAL_SPEED = 2;

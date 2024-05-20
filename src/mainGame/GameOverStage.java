@@ -12,12 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import powerups.PowerUp;
-
 import sprites.Player;
-import sprites.Enemy;
-
-import mainGame.GameTimer;
 
 public class GameOverStage {
 	private Scene scene;
@@ -67,28 +62,25 @@ public class GameOverStage {
 	void setProperties() {
 
 		//setting the background
-		if (this.timer == 60){ //if player wins
-			this.gc.drawImage(PLAYER2_WINS, 0, 0, GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT);
-		}
-
-		else { //if player loses
+			//if player loses
 			if(player1Wins) {
 				this.gc.drawImage(PLAYER1_WINS, 0, 0, GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT);
+				this.gc.drawImage(Player.p1_score, GameStage.WINDOW_WIDTH * 0.400, GameStage.WINDOW_HEIGHT * 0.65, ICON_WIDTH, ICON_WIDTH);
 				score = mainGame.GameTimer.player1.getScore();
 			}
 			if(!player1Wins) {
 				this.gc.drawImage(PLAYER2_WINS, 0, 0, GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT);
+				this.gc.drawImage(Player.p2_score, GameStage.WINDOW_WIDTH * 0.400, GameStage.WINDOW_HEIGHT * 0.65, ICON_WIDTH, ICON_WIDTH);
 				score = mainGame.GameTimer.player2.getScore();
 			}
 			
-		}
+
 
 		//setting the font style and showing the score
 
 		Font theFont = Font.font("ArcadeClassic", FontWeight.EXTRA_BOLD, 18);
 		this.gc.setFont(theFont);
 		this.gc.setFill(Color.WHITE);
-		this.gc.drawImage(Player.p1_score, GameStage.WINDOW_WIDTH * 0.400, GameStage.WINDOW_HEIGHT * 0.65, ICON_WIDTH, ICON_WIDTH);
 		this.gc.fillText("SCORE: " + String.valueOf(this.score), GameStage.WINDOW_WIDTH * 0.455, GameStage.WINDOW_HEIGHT * 0.7);
 
 

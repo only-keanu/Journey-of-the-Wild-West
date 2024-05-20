@@ -8,7 +8,6 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -30,7 +29,7 @@ public class Instructions {
 
 	private final static Image INSTRUCTION_PAGE1 = new Image ("instructions1.png", GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT, false, false);
 	private final static Image INSTRUCTION_PAGE2 = new Image ("instructions2.png", GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT, false, false);
-	private final static Image INSTRUCTION_PAGE3 = new Image ("instructions2.png", GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT, false, false);
+	private final static Image INSTRUCTION_PAGE3 = new Image ("instructions3.png", GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT, false, false);
 
 	Instructions () {
 		this.canvas = new Canvas (GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT);

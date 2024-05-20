@@ -4,44 +4,39 @@ package mainGame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
-
 import javax.swing.Timer;
-
 import sprites.Bullet;
 import sprites.Enemy;
 import sprites.Player;
 import javafx.animation.AnimationTimer;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.util.Duration;
+import powerups.Beer;
+import powerups.Candy;
 import powerups.Coffee;
-import powerups.Heart1;
+import powerups.Damage;
+import powerups.Heart;
 import powerups.Power;
-import powerups.PowerUp;
+import powerups.PowerUps;
 import sprites.*;
 
 public class GameTimer extends AnimationTimer{
 
 	Random r = new Random();
-	private GraphicsContext gc;
-	private Scene theScene;
+	GraphicsContext gc;
+	public Scene theScene;
 	public static Player player1;
 	public static Player player2;
 	private GameStage gameStage;
 
-	private boolean bossAppear; // to check if boss has already appeared
-	private int invulnerabilityTime; // keeps track of length of time Player1 is immortal
+	private int invulnerabilityTime; // keeps track of length of time player1 is immortal
 	private int initialTime; // records the time when enemy started going at max speed
-	private int addedPlayer1STR; // records Player1's strength to be added when power up is obtained
+	private int addedPlayer1STR; // records player1's strength to be added when power up is obtained
 	private int addedPlayer2STR; // records Player2's strength to be added when power up is obtained
 	private Boolean isEnemyMaxSpeed = false; // to keep track when enemy should have max speed
 
@@ -51,11 +46,13 @@ public class GameTimer extends AnimationTimer{
 	private int countDownTimer = TIME_LIMIT;
 
 	// arrayList of Sprites
-	public static ArrayList<Enemy> enemies;
+
+	List<Player> players = new ArrayList<>();
+	public ArrayList<Enemy> enemies;
 	public static ArrayList<Obstacle> obstacles;
 	private ArrayList<Bullet> bullets;
 	private ArrayList<Bullet> bullets2;
-	private ArrayList<PowerUp> powerups;
+	private ArrayList<PowerUps> powerups;
 	private Boss boss;
 
 	// counters
@@ -63,6 +60,9 @@ public class GameTimer extends AnimationTimer{
 	private int numHearts = 0;
 	private int numPowers = 0;
 	private int numCoffee = 0;
+	private int numBeer = 0;
+	private int numCandy = 0;
+	private int numDamage = 0;
 
 	// variables for rendering a description on the screen for 1 second
 	private boolean showingDescription;
@@ -73,7 +73,7 @@ public class GameTimer extends AnimationTimer{
 	private Color descriptionColor; // this variable stores the color
 
 	// activation of power up
-	private PowerUp powerupActivated; // this variable stores the power up currently being used
+	private PowerUps powerupActivated; // this variable stores the power up currently being used
 	private boolean powerupDeactivated; // is used when invoking the method when enemy speed is set to maximum
 
 	// constants
@@ -83,18 +83,18 @@ public class GameTimer extends AnimationTimer{
 	public static final int ICON_WIDTH = 40;
 
 	// time duration constants (in seconds)
-	private static final int TEMP_IMMORTALITY = 1; // temporary immortality when Player1 is hit by Boss
+	private static final int TEMP_IMMORTALITY = 1; // temporary immortality when player1 is hit by Boss
 	private static final int DESCRIPTION_LENGTH = 1; // time for description to show on screen
-	private static final int POKEBALL_MAX_DURATION = 3; // duration of time for enemys to be at maximum speed
+	private static final int ENEMY_MAX_DURATION = 3; // duration of time for enemies to be at maximum speed
 	private static final int POWERUP_LENGTH = 5; // power up activation length
 	private static final int POWERUP_LIFE = 5; // duration of time before power up disappears
 	private static final int POWERUP_APPEARANCE = 10; // duration of time before power up appears
-	private static final int POKEBALL_MAX_TIME = 15; // keeps track of every what second enemys should be at maximum speed
-	private static final int MASTERBALL_TIME_APPEARS = 30; // time before Boss appears
+	private static final int ENEMY_MAX_TIME = 15; // keeps track of every what second enemies should be at maximum speed
+	private static final int BOSS_TIME_APPEARANCE = 30; // time before Boss appears
 
 	//loading the images
 	private final Image BACKGROUND_IMG = new Image("bg_game.png", GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT,false, false);
-	private final Image LIFE_ICON = new Image("heart1.png");
+	private final Image LIFE_ICON = new Image("HEART.png");
 	private final Image COUNTDOWN_ICON = new Image("timer.gif");
 	public final static Image HEART1_ICON = new Image("heart1_unactivated.png");
 	public final static Image POWERUP_ICON = new Image("power_unactivated.png");
@@ -103,12 +103,8 @@ public class GameTimer extends AnimationTimer{
 	//KeyCode
 	KeyCode code1;
 	KeyCode code2;
-	private Set<KeyCode> pressedKeys1 = new HashSet<>();
-	private Set<KeyCode> pressedKeys2 = new HashSet<>();
-	boolean activeBullet = false;
-	boolean activeBullet2 = false;
-	List<Player> players = new ArrayList<>();
-	
+	public boolean activeBullet = false;
+	public boolean activeBullet2 = false;
 	
 	GameTimer(GraphicsContext gc, Scene theScene, GameStage stage){ //Handles Graphic and GameStage
 		
@@ -116,9 +112,8 @@ public class GameTimer extends AnimationTimer{
 		this.theScene = theScene;
 		this.gameStage = stage;
 		
-
-		// instantiate Player1
-		this.player1 = new Player("Player1", 100, 100);
+		// instantiate player1
+		this.player1 = new Player("player1", 100, 100);
 		this.player2 = new Player("Player2",500,300);
 		players.add(player1); // Add player1 to the list
 		players.add(player2); // Add player2 to the list
@@ -131,22 +126,22 @@ public class GameTimer extends AnimationTimer{
 		this.enemies = new ArrayList<Enemy>();
 
 		// instantiate the ArrayList of PowerUps
-		this.powerups = new ArrayList<PowerUp>();
+		this.powerups = new ArrayList<PowerUps>();
 
 		// instantiate the ArrayList of Bullets
-		this.bullets = this.player1.getBullets();
-		this.bullets2 = this.player2.getBullets();
+		this.bullets = GameTimer.player1.getBullets();
+		this.bullets2 = GameTimer.player2.getBullets();
 		
 		// instantiate the ArrayList of Obstacles
-		this.obstacles = new ArrayList<Obstacle>();
+		GameTimer.obstacles = new ArrayList<Obstacle>();
 		
-		// call the spawnFishes method to spawn the initial 7 enemys at the start
+		// call the spawnEnemies method to spawn the initial 7 enemies at the start
 		this.spawnEnemies(); 
 		
 		this.spawnObstacles(player1,player2);
 
 		// call method to handle key click event
-		this.handleKeyPressEvent();
+		this.player1.handleKeyPressEvent(this);
 
 		// calls the startTimer method to start the timer
 		this.startTimer();
@@ -159,13 +154,13 @@ public class GameTimer extends AnimationTimer{
 		this.gc.clearRect(0, 0, GameStage.WINDOW_WIDTH,GameStage.WINDOW_HEIGHT);
 		gc.drawImage(BACKGROUND_IMG, 0, 0);
 
-		// calls the methods to move for Player1, bullets, and enemys
+		// calls the methods to move for player1, bullets, and enemies
 		this.player1.move();
 		this.player2.move();
 		this.moveBullets();
 		this.moveEnemies();
 
-		// calls the methods to render Player1, enemys, bullets, and power ups
+		// calls the methods to render player1, enemies, bullets, and power ups
 		this.player1.render(this.gc);
 		this.player2.render(this.gc);
 		
@@ -177,10 +172,10 @@ public class GameTimer extends AnimationTimer{
 		// calls the status bar to the screen
 		this.statusBar();
 		
-		this.drawHealthBar();
+		this.gameStage.drawHealthBar(this);
 		
 	
-		// calls the get power ups to check if any power up shouldb  be activated
+		// calls the get power ups to check if any power up should  be activated
 		this.activatePowerUps();
 
 		// checks if there are descriptions to render
@@ -189,15 +184,25 @@ public class GameTimer extends AnimationTimer{
 		// winning or losing condition
 		if (currentTime == TIME_LIMIT || !player1.isAlive() || !player2.isAlive()) {
 			boolean player1Win = true;
-			if(!player1.isAlive() && player2.isAlive()) {
+			if(player1.isAlive()&&player2.isAlive()) {
 				this.timer.stop();
 				stop();
-				gameStage.setGameOver(!player1Win, numEnemies, numHearts, numPowers, numCoffee, currentTime);
+				gameStage.setGameOver(player1Win, numEnemies, numHearts, numPowers, numCoffee, currentTime);
 			}
 			if(player1.isAlive() && !player2.isAlive()) {
 				this.timer.stop();
 				stop();
 				gameStage.setGameOver(player1Win, numEnemies, numHearts, numPowers, numCoffee, currentTime);
+			}
+			if(player1.getScore()>player2.getScore()) {
+				this.timer.stop();
+				stop();
+				gameStage.setGameOver(player1Win, numEnemies, numHearts, numPowers, numCoffee, currentTime);
+			}
+			else {
+				this.timer.stop();
+				stop();
+				gameStage.setGameOver(!player1Win, numEnemies, numHearts, numPowers, numCoffee, currentTime);
 			}
 		}
 	}
@@ -218,7 +223,7 @@ public class GameTimer extends AnimationTimer{
 				// decrements 1 from count down timer
 				countDownTimer--;
 
-				// checks time if there should be enemys, power ups, or a Boss to spawn
+				// checks time if there should be enemies, power ups, or a Boss to spawn
 				//spawnenemys();
 				spawnPowerUps();
 				spawnBoss();
@@ -236,20 +241,6 @@ public class GameTimer extends AnimationTimer{
 
 	}
 
-	/* -----------------------------------------------------------------------------------------------------
-	This method calls the status bar that appears above the screen and displays the strength, the timer, the score, and the power ups */
-	private void drawHealthBar() {
-		gc.setFill(Color.RED);
-		gc.fillRect(50, GameStage.WINDOW_HEIGHT-80, 100*(player1.getStrength()/100.0), 20);
-		gc.setStroke(Color.BLACK);
-		gc.strokeRect(50, GameStage.WINDOW_HEIGHT-80, 100*(player1.getStrength()/100.0), 20);
-		
-		gc.setFill(Color.GREEN);
-		gc.fillRect(600, GameStage.WINDOW_HEIGHT-80, 100*(player2.getStrength()/100.0), 20);
-		gc.setStroke(Color.BLACK);
-		gc.strokeRect(600, GameStage.WINDOW_HEIGHT-80, 100*(player2.getStrength()/100.0), 20);
-       } 
-	
 	private void statusBar() {
 
 		// set font type, weight, size, and color
@@ -257,7 +248,7 @@ public class GameTimer extends AnimationTimer{
 		this.gc.setFont(theFont);
 		this.gc.setFill(Color.BLACK);
 
-		// Player1 strength information
+		// player1 strength information
 //		this.gc.drawImage(LIFE_ICON, GameStage.WINDOW_WIDTH * 0.02, GameStage.WINDOW_HEIGHT * 0.045, ICON_WIDTH, ICON_WIDTH);
 //		this.gc.fillText("STRENGTH: " + String.valueOf(player1.getStrength()), GameStage.WINDOW_WIDTH * 0.065, GameStage.WINDOW_HEIGHT * 0.085);
 
@@ -267,11 +258,11 @@ public class GameTimer extends AnimationTimer{
 
 		// score 1
 		this.gc.drawImage(Player.p1_score, GameStage.WINDOW_WIDTH * 0.15, GameStage.WINDOW_HEIGHT * 0.04, ICON_WIDTH, ICON_WIDTH);
-		this.gc.fillText("SCORE1 : " + String.valueOf(player1.getScore()), GameStage.WINDOW_WIDTH * 0.20, GameStage.WINDOW_HEIGHT * 0.085);
+		this.gc.fillText("SCORE : " + String.valueOf(player1.getScore()), GameStage.WINDOW_WIDTH * 0.20, GameStage.WINDOW_HEIGHT * 0.085);
 
 		// score 2
 		this.gc.drawImage(Player.p2_score, GameStage.WINDOW_WIDTH * 0.80, GameStage.WINDOW_HEIGHT * 0.04, ICON_WIDTH, ICON_WIDTH);
-		this.gc.fillText("SCORE2 : " + String.valueOf(player2.getScore()), GameStage.WINDOW_WIDTH * 0.85, GameStage.WINDOW_HEIGHT * 0.085);
+		this.gc.fillText("SCORE : " + String.valueOf(player2.getScore()), GameStage.WINDOW_WIDTH * 0.85, GameStage.WINDOW_HEIGHT * 0.085);
 		// shows Boss health if Boss is on screen
 //		this.gc.drawImage(Boss.BOSS_IMAGE, GameStage.WINDOW_WIDTH * 0.56, GameStage.WINDOW_HEIGHT * 0.04, ICON_WIDTH, ICON_WIDTH);
 
@@ -302,9 +293,7 @@ public class GameTimer extends AnimationTimer{
 	    }
 	}
 
-	// method that will render/draw the enemys to the canvas
-	
-	
+	// method that will render/draw the enemies to the canvas
 	private void renderEnemy() {
 		for (int i = 0; i < enemies.size(); i++){
 			Enemy e = enemies.get(i);
@@ -325,7 +314,7 @@ public class GameTimer extends AnimationTimer{
 
 	// method that will render/draw the power ups to the canvas
 	private void renderPowerUps() {
-		for (PowerUp p : this.powerups){
+		for (PowerUps p : this.powerups){
 			p.render(this.gc);
 		}
 	}
@@ -336,30 +325,40 @@ public class GameTimer extends AnimationTimer{
 		if (currentTime % POWERUP_APPEARANCE == 0 && currentTime != TIME_LIMIT) {
 
 			// generates a random number that determines what power up type is used
-			int i = r.nextInt(3);
+			int i = r.nextInt(6);
 
 			// generates a random x and y coordinate but makes sure it appears on the left side of the screen
-			int x = r.nextInt((GameStage.WINDOW_WIDTH/2) - PowerUp.POWERUP_SIZE);
-			int y = r.nextInt(GameStage.WINDOW_HEIGHT - PowerUp.POWERUP_SIZE);
+			int x = r.nextInt((GameStage.WINDOW_WIDTH/2) - PowerUps.POWERUP_SIZE);
+			int y = r.nextInt(GameStage.WINDOW_HEIGHT - PowerUps.POWERUP_SIZE);
 
 			// creates a power up based on the random number generated and adds it to the power up ArrayList
 			if (i == 0) {
-				Heart1 p = new Heart1 (x, y, PowerUp.HEART1, currentTime);
+				Heart p = new Heart (x, y, PowerUps.HEART, currentTime);
 				this.powerups.add(p);
-
 			} else if (i == 1) {
-				Power p = new Power (x, y, PowerUp.POWERUP, currentTime);
+				Power p = new Power (x, y, PowerUps.POWERUP, currentTime);
 				this.powerups.add(p);
 
 			} else if (i == 2) {
-				Coffee p = new Coffee (x, y, PowerUp.COFFEE, currentTime);
+				Coffee p = new Coffee (x, y, PowerUps.COFFEE, currentTime);
+				this.powerups.add(p);
+			} else if (i == 3) {
+				Beer p = new Beer (x, y, PowerUps.BEER, currentTime);
+				this.powerups.add(p);
+			} else if (i == 4) {
+				Candy p = new Candy (x, y, PowerUps.CANDY, currentTime);
+				this.powerups.add(p);
+			} else if (i == 5) {
+				Damage p = new Damage (x, y, PowerUps.DAMAGE, currentTime);
 				this.powerups.add(p);
 			}
+			
+				
 		}
 
 		// checks if the power up should be visible or not
 		for(int i = 0; i < this.powerups.size(); i++) {
-			PowerUp p = this.powerups.get(i);
+			PowerUps p = this.powerups.get(i);
 
 			// if power up is visible and time elapsed is equal to power up life then it is removed from the list
 			if ((currentTime - p.getTimeSpawned()) == POWERUP_LIFE) {
@@ -381,14 +380,14 @@ public class GameTimer extends AnimationTimer{
 	
 	
 	/* ---------------------------------------------------------------------------------------------
-	This method checks if the power up collides with Player1. If it is, its power is activated. */
+	This method checks if the power up collides with player1. If it is, its power is activated. */
 	public void activatePowerUps() {
 
 		// loops through the power ups
 		for(int i = 0; i < this.powerups.size(); i++) {
-			PowerUp p = this.powerups.get(i);
+			PowerUps p = this.powerups.get(i);
 
-			// collision of Player1 and power up
+			// collision of player1 and power up
 			if (p.collidesWith(this.player1)) {
 
 				this.powerupActivated = p; // makes the power up in use as the current power up
@@ -396,64 +395,93 @@ public class GameTimer extends AnimationTimer{
 
 				// checks which power up type was obtained and activates it
 
-				// HEART1 POWER UP - doubles the strength of the ship
-				if (p.getPowerUpType().equals(PowerUp.HEART1)) {
-					Heart1 p1 = (Heart1) p;
-					this.addedPlayer1STR = player1.getStrength(); // stores Player1's current strength in a variable
+				// HEART POWER UP - doubles the strength of the ship
+				if (p.getPowerUpType().equals(PowerUps.HEART)) {
+					Heart p1 = (Heart) p;
+					this.addedPlayer1STR = player1.getHP(); // stores player1's current strength in a variable
 					p1.activate(player1, this.addedPlayer1STR); // activates heart power up
 					this.numHearts++; // adds 1 to number of HEART1s
 
-					// EVOLUTION STONE POWER UP - makes Player1 immortal for 3 seconds
-				} else if (p.getPowerUpType().equals(PowerUp.POWERUP)) {
+					// EVOLUTION STONE POWER UP - makes player1 immortal for 3 seconds
+				} else if (p.getPowerUpType().equals(PowerUps.POWERUP)) {
 					Power p1 = (Power) p;
 					p1.activate(player1); // activates evolution stone power up
 					this.numPowers++; // adds 1 to number of evolution stones
 
-					// POKEDEX POWER UP - slows down the enemys for 3 seconds
-				} else if (p.getPowerUpType().equals(PowerUp.COFFEE)) {
+					// COFFEE POWER UP - speeds up for 3 seconds
+				} else if (p.getPowerUpType().equals(PowerUps.COFFEE)) {
+					player1.setSpeed(3);
 					this.numCoffee++; // adds 1 to number of coffee
+
+					// BEER POWER UP - slows down the enemies for 3 seconds
+				} else if (p.getPowerUpType().equals(PowerUps.BEER)) {
+					this.numBeer++; // adds 1 to number of beer
+					player2.setSpeed(0.3);
+
+				} else if (p.getPowerUpType().equals(PowerUps.CANDY)) {
+					this.numCandy++; // adds 1 to number of beer
+					player1.setSpeed(3);
+					player2.setSpeed(0.3);
+
+				} else if (p.getPowerUpType().equals(PowerUps.DAMAGE)) {
+					this.numDamage++; // adds 1 to number of beer
+					player1.setAttackDamage(15);
 					this.powerupDeactivated = true;
 
 				}
 
 				this.setDescription(this.powerupActivated.getX(), this.powerupActivated.getY(), this.powerupActivated.getPowerUpType() + " Activated!", currentTime, true, Color.GREEN);
-				player1.addPowerUp(p); // adds the power up to the ArrayList of power ups Player1 has obtained
+				player1.addPowerUp(p); // adds the power up to the ArrayList of power ups player1 has obtained
 				powerups.remove(p); // removes the power up from screen
 			}
 			
 			//player 2 collision
 			
-			if (p.collidesWith(this.player2)) {
+			else if (p.collidesWith(GameTimer.player2)) {
 
 				this.powerupActivated = p; // makes the power up in use as the current power up
 				p.setTimeObtained(currentTime); // sets the power up's time obtained to the current time
 
 				// checks which power up type was obtained and activates it
 
-				// HEART1 POWER UP - doubles the strength of the ship
-				if (p.getPowerUpType().equals(PowerUp.HEART1)) {
-					Heart1 p1 = (Heart1) p;
-					this.addedPlayer2STR = player2.getStrength(); // stores Player1's current strength in a variable
+				// HEART POWER UP - doubles the strength of the ship
+				if (p.getPowerUpType().equals(PowerUps.HEART)) {
+					Heart p1 = (Heart) p;
+					this.addedPlayer2STR = player2.getHP(); // stores player1's current strength in a variable
 					p1.activate(player2, this.addedPlayer2STR); // activates heart power up
 					this.numHearts++; // adds 1 to number of HEART1s
 
-					// EVOLUTION STONE POWER UP - makes Player1 immortal for 3 seconds
-				} else if (p.getPowerUpType().equals(PowerUp.POWERUP)) {
+					// EVOLUTION STONE POWER UP - makes player1 immortal for 3 seconds
+				} else if (p.getPowerUpType().equals(PowerUps.POWERUP)) {
 					Power p1 = (Power) p;
 					p1.activate(player2); // activates evolution stone power up
 					this.numPowers++; // adds 1 to number of evolution stones
 
-					// POKEDEX POWER UP - slows down the enemys for 3 seconds
-				} else if (p.getPowerUpType().equals(PowerUp.COFFEE)) {
+					// COFFEE POWER UP - slows down the enemies for 3 seconds
+				} else if (p.getPowerUpType().equals(PowerUps.COFFEE)) {
 					this.numCoffee++; // adds 1 to number of coffee
 					player2.setSpeed(3);
+					
+					// BEER POWER UP - slows down the enemies for 3 seconds
+				} else if (p.getPowerUpType().equals(PowerUps.BEER)) {
+					this.numBeer++; // adds 1 to number of beer
+					player1.setSpeed(0.3);
 					this.powerupDeactivated = true;
 					
- 
+				} else if (p.getPowerUpType().equals(PowerUps.CANDY)) {
+					this.numCandy++; // adds 1 to number of beer
+					player2.setSpeed(3);
+					player1.setSpeed(0.3);
+
+				} else if (p.getPowerUpType().equals(PowerUps.DAMAGE)) {
+					this.numDamage++; // adds 1 to number of beer
+					player2.setAttackDamage(15);
+					this.powerupDeactivated = true;
+
 				}
 
 				this.setDescription(this.powerupActivated.getX(), this.powerupActivated.getY(), this.powerupActivated.getPowerUpType() + " Activated!", currentTime, true, Color.GREEN);
-				player2.addPowerUp(p); // adds the power up to the ArrayList of power ups Player1 has obtained
+				player2.addPowerUp(p); // adds the power up to the ArrayList of power ups player1 has obtained
 				powerups.remove(p); // removes the power up from screen
 			}
 		}
@@ -464,12 +492,12 @@ public class GameTimer extends AnimationTimer{
 		if (this.powerupActivated != null) {
 
 			//the heart shows the added strength
-			if (this.powerupActivated.getPowerUpType().equals(PowerUp.HEART1)) {
+			if (this.powerupActivated.getPowerUpType().equals(PowerUps.HEART)) {
 
 				if (currentTime - this.powerupActivated.getTimeObtained() != 2) {
 
 					// heart icon has color to show it is activated
-					this.gc.drawImage(PowerUp.HEART_IMAGE, GameStage.WINDOW_WIDTH * 0.79, GameStage.WINDOW_HEIGHT * 0.04, Player.getPikachuWidth()-12, Player.getPikachuWidth()-12);
+					this.gc.drawImage(PowerUps.HEART_IMAGE, GameStage.WINDOW_WIDTH * 0.79, GameStage.WINDOW_HEIGHT * 0.04, Player.getPlayerWidth()-12, Player.getPlayerWidth()-12);
 
 					// added strength is shown on screen
 					this.setDescription(player1.getX(), player1.getY(), "+" + this.addedPlayer1STR + " Strength", currentTime, true, Color.GREEN);
@@ -479,35 +507,36 @@ public class GameTimer extends AnimationTimer{
 				}
 			}
 
-			//the evolution stone power up makes Player1 immortal after 5 seconds
-			else if (this.powerupActivated.getPowerUpType().equals(PowerUp.POWERUP)) {
+			//the evolution stone power up makes player1 immortal after 5 seconds
+			else if (this.powerupActivated.getPowerUpType().equals(PowerUps.POWERUP)) {
 
 				// makes sure power up lasts only for 5 seconds
 				if (currentTime - this.powerupActivated.getTimeObtained() != POWERUP_LENGTH) {
 
 					// evolution stone icon has color to show it is activated
-					this.gc.drawImage(PowerUp.POWER_IMAGE, GameStage.WINDOW_WIDTH * 0.86, GameStage.WINDOW_HEIGHT * 0.04, Player.getPikachuWidth()-12, Player.getPikachuWidth()-12);
+					this.gc.drawImage(PowerUps.POWER_IMAGE, GameStage.WINDOW_WIDTH * 0.86, GameStage.WINDOW_HEIGHT * 0.04, Player.getPlayerWidth()-12, Player.getPlayerWidth()-12);
 
 				} else {
-					player1.setImage(Player.getPlayer1Image()); // change Player1 icon from pl to Player1
+					player1.setImage(Player.getPlayer1Image()); // change player1 icon from pl to player1
 					player1.setImmortality(false); // reverts immortality to false after 5 seconds
+					player2.setImage(Player.getPlayer2Image()); // change player1 icon from pl to player1
+					player2.setImmortality(false); // reverts immortality to false after 5 seconds
 					this.powerupActivated = null; // power up in use is now null
 				}
 			}
 
-			//the coffee returns the enemy speed back to initial speed after 5 seconds
-			else if (this.powerupActivated.getPowerUpType().equals(PowerUp.COFFEE)) {
+			//the beer returns the enemy speed back to initial speed after 5 seconds
+			else if (this.powerupActivated.getPowerUpType().equals(PowerUps.BEER)) {
 
 				// makes sure power up lasts only for 5 seconds
 				if (currentTime - this.powerupActivated.getTimeObtained() != POWERUP_LENGTH) {
 
-					//sets all enemys to initial speed, even the newly-created ones
-					Coffee p = (Coffee) powerupActivated;
-					p.activate(this.enemies);
-					
+					//sets all enemies to initial speed, even the newly-created ones
+					Beer p = (Beer) powerupActivated;
+					p.activate(this.enemies, players);
 
-					// coffee icon has color to show it is activated
-					this.gc.drawImage(PowerUp.COFFEE_IMG, GameStage.WINDOW_WIDTH * 0.93, GameStage.WINDOW_HEIGHT * 0.04, Player.getPikachuWidth()-12, Player.getPikachuWidth()-12);
+					// beer icon has color to show it is activated
+					this.gc.drawImage(PowerUps.BEER_IMG, GameStage.WINDOW_WIDTH * 0.93, GameStage.WINDOW_HEIGHT * 0.04, Player.getPlayerWidth()-12, Player.getPlayerWidth()-12);
 
 				} else {
 					for (Enemy p : this.enemies) {
@@ -519,11 +548,28 @@ public class GameTimer extends AnimationTimer{
 					player2.setSpeed(1);
 				}
 			}
+			//candy returns the enemy speed back to initial speed after 5 seconds
+			else if ((this.powerupActivated.getPowerUpType().equals(PowerUps.CANDY) || (this.powerupActivated.getPowerUpType().equals(PowerUps.COFFEE)))) {
+
+				// makes sure power up lasts only for 5 seconds
+				if (currentTime - this.powerupActivated.getTimeObtained() != POWERUP_LENGTH) {
+
+
+				} else {
+					for (Enemy p : this.enemies) {
+						p.setSpeed(p.getInitialSpeed()); // sets enemy speed back to its initial speed
+					}
+					this.powerupDeactivated = false; // deactivates coffee watch power up
+					this.powerupActivated = null; // power up in use is now null
+					player1.setSpeed(1);
+					player2.setSpeed(1);
+				}
+			} 
 		}
 	}
 
 	/* ---------------------------------------------------------------------------------------------
-	This method spawns/instantiates enemys at a random x, y location */
+	This method spawns/instantiates enemies at a random x, y location */
 	
 	private void spawnEnemies() {
 	    Thread spawner = new Thread(() -> {
@@ -582,51 +628,49 @@ public class GameTimer extends AnimationTimer{
 	}
 	
 	private void spawnObstacles(Player p1, Player p2) {
-	    Thread spawner = new Thread(() -> {
-	        try {
-	            Random random = new Random();
-	            Set<String> occupiedPositions = new HashSet<>(); // Store occupied positions
+        Thread spawner = new Thread(() -> {
+            try {
+                Random random = new Random();
+                Set<String> occupiedPositions = new HashSet<>(); // Store occupied positions
 
-	            while (true) {
-	                // Spawn 10 obstacles at a time
-	                for (int i = 0; i < 5; i++) {
-	                    double x = random.nextDouble() * GameStage.WINDOW_WIDTH;
-	                    double y = random.nextDouble() * GameStage.WINDOW_HEIGHT;
-	                    double player1_x = p1.getX();
-	                    double player1_y = p1.getY();
-	                    double player2_x = p2.getX();
-	                    double player2_y = p2.getY();
+                while (true) {
+                    // Spawn 5 obstacles at a time
+                    for (int i = 0; i < 10; i++) {
+                        double x = random.nextDouble() * GameStage.WINDOW_WIDTH;
+                        double y = random.nextDouble() * GameStage.WINDOW_HEIGHT;
 
-	                    String positionKey = x + "," + y;
-	                    String positionKeyP1 = player1_x + "," + player1_y;
-	                    String positionKeyP2 = player2_x + "," + player2_y;
+                        Obstacle newObstacle = new Obstacle(x, y);
 
-	                    // Check if the position is already occupied
-	                    if (!occupiedPositions.contains(positionKey)&&!occupiedPositions.contains(positionKeyP1)&&!occupiedPositions.contains(positionKeyP2)) {
-	                        this.obstacles.add(new Obstacle(x, y)); // Spawn obstacle
-	                        occupiedPositions.add(positionKey); // Add the new position to occupied positions
-	                    }
-	                }
+                        // Check if the obstacle collides with either player
+                        if (!p1.collidesWith(newObstacle) && !p2.collidesWith(newObstacle)) {
+                            GameTimer.obstacles.add(newObstacle); // Spawn obstacle
+                            occupiedPositions.add(x + "," + y); // Add the new position to occupied positions
+                        }
+                    }
 
-	                Thread.sleep(1500); // Adjust as needed to control the spawning rate
+                    Thread.sleep(1500); // Adjust as needed to control the spawning rate
 
-	                // Remove spawned obstacles after every 5 seconds
-	                for (int j = 0; j < 5; j++) {
-	                    Thread.sleep(1000); // Sleep for 1 second
-	                }
+                    // Remove spawned obstacles after every 5 seconds
+                    for (int j = 0; j < 10; j++) {
+                        Thread.sleep(1000); // Sleep for 1 second
+                    }
 
-	                this.obstacles.clear(); // Remove all spawned obstacles
-	                occupiedPositions.clear(); // Clear occupied positions
-	            }
-	        } catch (InterruptedException ex) {
-	            ex.printStackTrace();
-	        }
-	    });
-	    spawner.setDaemon(true);
-	    spawner.start();
+                    GameTimer.obstacles.clear(); // Remove all spawned obstacles
+                    occupiedPositions.clear(); // Clear occupied positions
+                }
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        });
+        spawner.setDaemon(true);
+        spawner.start();
+    }
+	
+	// Method to add obstacles
+	public void addObstacle(double x, double y) {
+	    Obstacle obstacle = new Obstacle(x, y);
+	    obstacles.add(obstacle);
 	}
-
-
 
 	private Player findClosestPlayer(int enemyX, int enemyY) {
 	    double minDistance = Double.MAX_VALUE;
@@ -675,21 +719,20 @@ public class GameTimer extends AnimationTimer{
 	private void spawnBoss() {
 
 		// spawns a Boss if time elapsed is 30 seconds
-		if(currentTime == MASTERBALL_TIME_APPEARS) {
+		if(currentTime == BOSS_TIME_APPEARANCE) {
 			int x = 400 + r.nextInt(((GameStage.WINDOW_WIDTH)/2) - Boss.BOSS_WIDTH); // so that fishes appear only at the right side of the screen
 			int y = r.nextInt(GameStage.WINDOW_HEIGHT - Boss.BOSS_WIDTH);
 
 			this.boss = new Boss(x,y); // creates a boss
-			this.enemies.add(this.boss); // adds it to arrayList of enemys
-			this.bossAppear = true; // indicates that the boss/Boss has appeared in the game
+			this.enemies.add(this.boss); // adds it to arrayList of enemies
 		}
 	}
 
 	/* ---------------------------------------------------------------------------------------------
-	This method moves the bullets shot by Player1 */
+	This method moves the bullets shot by player1 */
 	private void moveBullets() {
 
-		// create a local arrayList of Bullets for the bullets 'shot' by Player1
+		// create a local arrayList of Bullets for the bullets 'shot' by player1
 		ArrayList<Bullet> bList = this.bullets;
 		ArrayList<Bullet> bList2 = this.bullets2;
 
@@ -763,13 +806,13 @@ public class GameTimer extends AnimationTimer{
 		for (Bullet b : this.bullets) { // loops through the bullet list
 			if(b.collidesWith(player2)) {
 				b.setVisible(false);
-				player2.decreaseStrength(10); 
+				player2.decreaseHP(player1.getAttackDamage()); 
 				// shows the damage incurred by player1 to player2
-				this.setDescription(player2.getX(), player2.getY(), "-" + "10" + " HP", currentTime, true, Color.RED);
+				this.setDescription(player2.getX(), player2.getY(), "-" + player1.getAttackDamage() + " HP", currentTime, true, Color.RED);
 			}
 			// checks if Player 2 has enough health
-			if(player2.getStrength() <= 0) { // if Player 2 health is 0 or below, it dies
-				player2.setStrength(0);
+			if(player2.getHP() <= 0) { // if Player 2 health is 0 or below, it dies
+				player2.setHP(0);
 				player2.die();
 			}
 			for (Enemy p : this.enemies) { // loops through the enemy list
@@ -782,8 +825,8 @@ public class GameTimer extends AnimationTimer{
 						b.setVisible(false); //the bullet will not be visible
 						activeBullet = false; //deactivateBullet
 						Boss boss = (Boss) p; 
-						b.setDamage(player1.getStrength()); // damage of bullet is Player1's current strength
-						boss.decreaseHealth(b.getDamage()); // decreases health by damage of Player1
+						b.setDamage(player1.getHP()); // damage of bullet is player1's current strength
+						boss.decreaseHealth(b.getDamage()); // decreases health by damage of player1
 
 						//prints damage
 						this.setDescription(boss.getX(), boss.getY(), "-" + b.getDamage() + " Damage", currentTime, true, Color.RED); //shows +1 as score
@@ -819,12 +862,12 @@ public class GameTimer extends AnimationTimer{
 		for (Bullet b2 : this.bullets2) { // loops through the bullet list
 			if(b2.collidesWith(player1)) {
 				b2.setVisible(false);
-				player1.decreaseStrength(10);
-				this.setDescription(player1.getX(), player1.getY(), "-" + "10" + " HP", currentTime, true, Color.RED);
+				player1.decreaseHP(player2.getAttackDamage());
+				this.setDescription(player1.getX(), player1.getY(), "-" + player2.getAttackDamage() + " HP", currentTime, true, Color.RED);
 			}
-			// checks if Player1 has enough health
-			if(player1.getStrength() <= 0) { // if Player1's health is 0 or below, it dies
-				player1.setStrength(0);
+			// checks if player1 has enough health
+			if(player1.getHP() <= 0) { // if player1's health is 0 or below, it dies
+				player1.setHP(0);
 				player1.die();
 			}
 			for (Enemy p : this.enemies) { // loops through the enemy list
@@ -836,8 +879,8 @@ public class GameTimer extends AnimationTimer{
 					if (p instanceof Boss) {
 						b2.setVisible(false); //the bullet will not be visible
 						Boss boss = (Boss) p; 
-						b2.setDamage(player2.getStrength()); // damage of bullet is Player1's current strength
-						boss.decreaseHealth(b2.getDamage()); // decreases health by damage of Player1
+						b2.setDamage(player2.getHP()); // damage of bullet is player1's current strength
+						boss.decreaseHealth(b2.getDamage()); // decreases health by damage of player1
 
 						//prints damage
 						this.setDescription(boss.getX(), boss.getY(), "-" + b2.getDamage() + " Damage", currentTime, true, Color.RED); //shows +1 as score
@@ -858,7 +901,7 @@ public class GameTimer extends AnimationTimer{
 				}
 			}
 			
-			for (Obstacle o : this.obstacles) { // loops through the obstacle list
+			for (Obstacle o : GameTimer.obstacles) { // loops through the obstacle list
 
 				// if the bullet collides with the obstacle, then the obstacle disappears
 				if (b2.collidesWith(o)) {
@@ -870,7 +913,7 @@ public class GameTimer extends AnimationTimer{
 	}
 
 	/* ---------------------------------------------------------------------------------------------
-	This method moves the enemys */
+	This method moves the enemies */
 	private void moveEnemies(){
 
 		for(int i = this.enemies.size() - 1; i >= 0; i--) { // loop through the enemy ArrayList in reverse order
@@ -886,7 +929,7 @@ public class GameTimer extends AnimationTimer{
 		for (Enemy p: this.enemies) { // loops through all the enemies to see its collisions
 
 			//for player1 and enemy collision
-			if (p.collidesWith(this.player1)) {
+			if (p.collidesWith(GameTimer.player1)) {
 
 				// if enemy is just a regular enemy then it dies
 				if (!(p instanceof Boss)) {
@@ -895,59 +938,59 @@ public class GameTimer extends AnimationTimer{
 				}
 
 
-				// if Player1 is not immortal then its strength will decrease by the enemy/Boss damage
-				if (!player1.getImmortality()) { // checks if Player1 is immortal or not
-					player1.decreaseStrength(10); // Player1 will decrease according to strength of enemy
+				// if player1 is not immortal then its strength will decrease by the enemy/Boss damage
+				if (!player1.getImmortality()) { // checks if player1 is immortal or not
+					player1.decreaseHP(10); // player1 will decrease according to strength of enemy
 
-					// if Player1 collides with Boss, the Boss grants temporary immortality to incur less damage
+					// if player1 collides with Boss, the Boss grants temporary immortality to incur less damage
 					if (p instanceof Boss) {
 						player1.setImmortality(true);
 						this.invulnerabilityTime = currentTime;
 					}
 
-					// shows the damage incurred by Player1
-					this.setDescription(p.getX(), p.getY(), "-" + p.getDamage() + " Strength", currentTime, true, Color.RED);
+					// shows the damage incurred by player1
+					this.setDescription(p.getX(), p.getY(), "-" + p.getDamage() + " HP", currentTime, true, Color.RED);
 
-					// if Player1 is immortal then no damage occurs and shows +1 to score
+					// if player1 is immortal then no damage occurs and shows +1 to score
 				} else if (player1.getImmortality() && !(p instanceof Boss)) this.setDescription(p.getX(), p.getY(), "+1 Score", currentTime, true, Color.GREEN);
 
-				// checks if Player1 has enough health
-				if(player1.getStrength() <= 0) { // if Player1's health is 0 or below, it dies
-					player1.setStrength(0);
+				// checks if player1 has enough health
+				if(player1.getHP() <= 0) { // if player1's health is 0 or below, it dies
+					player1.setHP(0);
 					player1.die();
 				}
 			}
 			
 			//Player2 and Enemy Collision
-			if (p.collidesWith(this.player2)) {
+			if (p.collidesWith(GameTimer.player2)) {
 
 				// if enemy is just a regular enemy then it dies
 				if (!(p instanceof Boss)) {
 					p.setAlive(false); // the enemy will die
-//					this.numEnemies++; // adds 1 to number of enemys defeated
+//					this.numEnemies++; // adds 1 to number of enemies defeated
 //					player2.setScore(player2.getScore()+1);
 				}
 
 
-				// if Player1 is not immortal then its strength will decrease by the enemy/Boss damage
-				if (!player2.getImmortality()) { // checks if Player1 is immortal or not
-					player2.decreaseStrength(10); // Player1 will decrease according to strength of enemy
+				// if player1 is not immortal then its strength will decrease by the enemy/Boss damage
+				if (!player2.getImmortality()) { // checks if player1 is immortal or not
+					player2.decreaseHP(10); // player1 will decrease according to strength of enemy
 
-					// if Player1 collides with Boss, the Boss grants temporary immortality to incur less damage
+					// if player1 collides with Boss, the Boss grants temporary immortality to incur less damage
 					if (p instanceof Boss) {
 						player2.setImmortality(true);
 						this.invulnerabilityTime = currentTime;
 					}
 
-					// shows the damage incurred by Player1
+					// shows the damage incurred by player1
 					this.setDescription(p.getX(), p.getY(), "-" + p.getDamage() + " Strength", currentTime, true, Color.RED);
 
-					// if Player1 is immortal then no damage occurs and shows +1 to score
+					// if player1 is immortal then no damage occurs and shows +1 to score
 				} else if (player2.getImmortality() && !(p instanceof Boss)) this.setDescription(p.getX(), p.getY(), "+1 Score", currentTime, true, Color.GREEN);
 
-				// checks if Player1 has enough health
-				if(player2.getStrength() <= 0) { // if Player1's health is 0 or below, it dies
-					player2.setStrength(0);
+				// checks if player1 has enough health
+				if(player2.getHP() <= 0) { // if player1's health is 0 or below, it dies
+					player2.setHP(0);
 					player2.die();
 				}
 			}
@@ -972,13 +1015,13 @@ public class GameTimer extends AnimationTimer{
 	This method speeds the movement of the enemy to maximum for a 3 second duration every 15 seconds */
 	private void enemySpeed() {
 
-		if (currentTime % POKEBALL_MAX_TIME == 0 && currentTime != TIME_LIMIT) {
+		if (currentTime % ENEMY_MAX_TIME == 0 && currentTime != TIME_LIMIT) {
 			this.isEnemyMaxSpeed = true; // activates movement of enemy at max speed
 			this.initialTime = currentTime; // time when speed changes is recorded
 		}
 
 		if (this.isEnemyMaxSpeed) { // if true then it proceeds to change movement of enemy to max speed
-			if(currentTime - this.initialTime != POKEBALL_MAX_DURATION) { // if time elapsed is not 3 then enemy speed is still equal to max
+			if(currentTime - this.initialTime != ENEMY_MAX_DURATION) { // if time elapsed is not 3 then enemy speed is still equal to max
 				if (!powerupDeactivated) { // checks if time is being slowed down through the power up
 					for (Enemy p: this.enemies) { // sets speed of all enemy to max
 						p.setSpeed(Enemy.MAX_SPEED);
@@ -1020,66 +1063,26 @@ public class GameTimer extends AnimationTimer{
 	}
 
 	/* ---------------------------------------------------------------------------------------------
-	This method listens and handles the key press events */
-	private void handleKeyPressEvent() {
-	    this.theScene.setOnKeyPressed(e -> {
-	        KeyCode code = e.getCode();
-	        moveMyPikachu(code);
-	        System.out.println(activeBullet+" STATE.");
-	        System.out.println(activeBullet2+" STATE.");
-	        if(activeBullet == false) {
-		        shootMyPikachu(code);
-	        }
-	        if(activeBullet2 == false) {
-	        	shootMyPikachu2(code);
-	        }
-	        if (code == KeyCode.W || code == KeyCode.A || code == KeyCode.S || code == KeyCode.D) {
-	        pressedKeys1.add(code);
-	        }
-	        
-	        if(code == KeyCode.NUMPAD8 || code == KeyCode.NUMPAD4 || code == KeyCode.NUMPAD5 || code == KeyCode.NUMPAD6){
-	        pressedKeys2.add(code);
-	        }
-	    });
-
-	    this.theScene.setOnKeyReleased(e -> {
-	        KeyCode code = e.getCode();
-	        if (code == KeyCode.W || code == KeyCode.A || code == KeyCode.S || code == KeyCode.D) {
-		        pressedKeys1.remove(code);
-		        }
-	        if(code == KeyCode.NUMPAD8 || code == KeyCode.NUMPAD4 || code == KeyCode.NUMPAD5 || code == KeyCode.NUMPAD6){
-	        	pressedKeys2.remove(code);
-		        }
-	        if (pressedKeys1.isEmpty()) {
-	            stopPlayer1();
-	        }
-	        if(pressedKeys2.isEmpty()) {
-	        	stopPlayer2();
-	        }
-	    });
-	}
-
-	/* ---------------------------------------------------------------------------------------------
 	This method moves the ship depending on the key pressed */
-	private void moveMyPikachu(KeyCode ke) {
-		if (ke == KeyCode.W) this.player1.setDY(-1);
-	    if (ke == KeyCode.A) this.player1.setDX(-1);
-	    if (ke == KeyCode.S) this.player1.setDY(1);
-	    if (ke == KeyCode.D) this.player1.setDX(1);
+	public void movePlayer(KeyCode ke) {
+		if (ke == KeyCode.W) GameTimer.player1.setDY(-player1.getSpeed());
+	    if (ke == KeyCode.A) GameTimer.player1.setDX(-player1.getSpeed());
+	    if (ke == KeyCode.S) GameTimer.player1.setDY(player1.getSpeed());
+	    if (ke == KeyCode.D) GameTimer.player1.setDX(player1.getSpeed());
 
 		
 		//player 2
-		if(ke==KeyCode.NUMPAD8) this.player2.setDY(-player2.getSpeed());
+		if(ke==KeyCode.NUMPAD8) GameTimer.player2.setDY(-player2.getSpeed());
 
-		if(ke==KeyCode.NUMPAD4) this.player2.setDX(-player2.getSpeed());
+		if(ke==KeyCode.NUMPAD4) GameTimer.player2.setDX(-player2.getSpeed());
 
-		if(ke==KeyCode.NUMPAD5) this.player2.setDY(player2.getSpeed());
+		if(ke==KeyCode.NUMPAD5) GameTimer.player2.setDY(player2.getSpeed());
 
-		if(ke==KeyCode.NUMPAD6) this.player2.setDX(player2.getSpeed());
+		if(ke==KeyCode.NUMPAD6) GameTimer.player2.setDX(player2.getSpeed());
 		
 	}
 	
-	private void shootMyPikachu(KeyCode ke) {
+	public void shootPlayer1(KeyCode ke) {
 		if(ke==KeyCode.Y) {
 			this.player1.shoot();
 			code1 = KeyCode.W; 
@@ -1103,7 +1106,7 @@ public class GameTimer extends AnimationTimer{
 		System.out.println(ke+" key pressed.");
 	}
 	
-	private void shootMyPikachu2(KeyCode ke) {
+	public void shootPlayer2(KeyCode ke) {
 		
 		if(ke==KeyCode.UP) {
 			this.player2.shoot();
@@ -1129,22 +1132,18 @@ public class GameTimer extends AnimationTimer{
 
 	/* ---------------------------------------------------------------------------------------------
 	This method stops player1's movement and set it DX and DY to 0 */
-	private void stopPlayer1() {
+	public void stopPlayer1() {
 	    this.player1.setDX(0);
 	    this.player1.setDY(0);
 	}
 	
 	//This method stops the player2's movement and set it DX and DY to 0 */
-	private void stopPlayer2() {
+	public void stopPlayer2() {
 	    this.player2.setDX(0);
 	    this.player2.setDY(0);
 	}
 	
-	// Method to add obstacles
-	public void addObstacle(double x, double y) {
-	    Obstacle obstacle = new Obstacle(x, y);
-	    obstacles.add(obstacle);
-	}
+
 	
 	
 }

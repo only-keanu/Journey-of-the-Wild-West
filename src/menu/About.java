@@ -8,7 +8,6 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -33,7 +32,7 @@ public class About {
 
 	About () {
 		this.canvas = new Canvas (GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT);
-		this.gc = canvas.getGraphicsContext2D();
+		About.gc = canvas.getGraphicsContext2D();
 		this.root = new StackPane();
 		this.scene = new Scene (root, GameStage.WINDOW_WIDTH, GameStage.WINDOW_HEIGHT);
 	}

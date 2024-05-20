@@ -8,7 +8,8 @@ public class Sprite {
 	protected Image img;
 	double x;
 	double y;
-	protected int dx, dy;
+	double dx;
+	protected double dy;
 	protected boolean visible;
 	protected double width;
 	protected double height;
@@ -74,12 +75,12 @@ public class Sprite {
 	}
 
 	//setters
-	public void setDX(int dx){
-		this.dx = dx;
+	public void setDX(double d){
+		this.dx = d;
 	}
 
-	public void setDY(int dy){
-		this.dy = dy;
+	public void setDY(double d){
+		this.dy = d;
 	}
 
 	public void setWidth(double val){
